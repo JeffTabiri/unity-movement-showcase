@@ -7,11 +7,16 @@ public class PlayerJump : MonoBehaviour
 {
     private Rigidbody2D rb;
     private CollisionChecker collisionChecker;
-    private float jumpMaxHeight = 10f;
+    private float jumpMaxHeight = 5f;
     
 
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
+
+    private float jumpBufferTime = 1f;
+    
+    [SerializeField]
+    private float jumpBufferTimeCounter;
     
     // Start is called before the first frame update
     void Awake()
@@ -22,18 +27,26 @@ public class PlayerJump : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (context.started && coyoteTimeCounter > 0) 
+        jumpBufferTimeCounter = jumpBufferTime;
+        
+        if (jumpBufferTimeCounter > 0 && coyoteTimeCounter > 0) 
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpMaxHeight);
             coyoteTimeCounter = 0f;
         }
+
+        if (context.canceled && rb.velocity.y > 0)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y/2);
+        }
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         CoyoteTimeCheck();
-        
+        jumpBufferTimeCounter -= Time.deltaTime;
     }
     
     /// <summary>
