@@ -5,26 +5,35 @@ using UnityEngine.InputSystem;
 
 public class PlayerJump : MonoBehaviour
 {
+    //Necessary Components
     private Rigidbody2D rb;
     private CollisionChecker collisionChecker;
+    
+    //Player Data
     private float jumpMaxHeight = 5f;
     
 
+    //Coyote Timer
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
 
+    //Jump Buffer Timer
     private float jumpBufferTime = 1f;
-    
-    [SerializeField]
     private float jumpBufferTimeCounter;
     
-    // Start is called before the first frame update
+    //Find necessary components
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         collisionChecker = GetComponent<CollisionChecker>();
     }
 
+    /// <summary>
+    /// Jump script, which is responsible for applying for in the y axis. 
+    /// </summary>
+    /// <param name="context">
+    /// Which is responsible for listening for keys which starts the jump method. 
+    /// </param>
     public void OnJump(InputAction.CallbackContext context)
     {
         jumpBufferTimeCounter = jumpBufferTime;
