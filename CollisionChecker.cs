@@ -4,23 +4,25 @@ using UnityEngine;
 
 public class CollisionChecker : MonoBehaviour
 {
+    private PlayerRun playerRun;
+    
+    [SerializeField] 
+    private bool isGround;
 
-    [SerializeField] private bool isGround;
-
-    [SerializeField] private bool isFacingWall;
+    [SerializeField] 
+    private bool isFacingWall;
 
     private float groundDistance = 0.05f;
     
     private float wallDistance = 0.05f;
 
+    private RaycastHit2D[] hits = new RaycastHit2D[5];
+    private RaycastHit2D[] wallhits = new RaycastHit2D[5];
+
     private ContactFilter2D castFilterGround;
 
     private ContactFilter2D castFilterWall;
-
-    private RaycastHit2D[] groundHits = new RaycastHit2D[3];
-
-    private RaycastHit2D[] wallHits = new RaycastHit2D[3];
-
+    
     public bool isGrounded
     {
         get
@@ -56,17 +58,27 @@ public class CollisionChecker : MonoBehaviour
     void Awake()
     {
         playerCollider = GetComponent<CapsuleCollider2D>();
+        playerRun = GetComponent<PlayerRun>();
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
-        isGrounded = playerCollider.Cast(Vector2.down, castFilterGround, groundHits, groundDistance) > 0;
-         
-        isWalled = playerCollider.Cast(Vector2.right, castFilterWall, wallHits, wallDistance) > 0;
-        Debug.DrawLine(playerCollider.transform.position, Vector2.right);
-        Debug.DrawLine(playerCollider.transform.position, Vector2.down);
+        isGrounded = playerCollider.Cast(Vector2.down, castFilterGround, hits, groundDistance) > 0.01f;
+        DetectWall();
     }
-    
-    
+
+
+    public void DetectWall()
+    {
+        if (playerRun.IsFacingRight)
+        {
+            isWalled = playerCollider.Cast(Vector2.right, castFilterWall, wallhits, wallDistance) > 0.01f;
+        }
+        else if (!playerRun.IsFacingRight)
+        {
+            isWalled = playerCollider.Cast(Vector2.left, castFilterWall, wallhits, wallDistance) > 0.01f;
+        }
+    }   
+
 }

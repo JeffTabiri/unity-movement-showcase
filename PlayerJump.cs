@@ -8,19 +8,18 @@ public class PlayerJump : MonoBehaviour
     //Necessary Components
     private Rigidbody2D rb;
     private CollisionChecker collisionChecker;
-    
+
     //Player Data
-    private float jumpMaxHeight = 5f;
-    
+    private float jumpMaxHeight = 6f;
 
     //Coyote Timer
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
 
     //Jump Buffer Timer
-    private float jumpBufferTime = 1f;
+    private float jumpBufferTime = 0.2f;
     private float jumpBufferTimeCounter;
-    
+
     //Find necessary components
     void Awake()
     {
@@ -38,26 +37,34 @@ public class PlayerJump : MonoBehaviour
     {
         jumpBufferTimeCounter = jumpBufferTime;
         
-        if (jumpBufferTimeCounter > 0 && coyoteTimeCounter > 0) 
+        if (jumpBufferTimeCounter > 0 && coyoteTimeCounter > 0)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpMaxHeight);
             coyoteTimeCounter = 0f;
+            jumpBufferTimeCounter = 0f;
         }
 
         if (context.canceled && rb.velocity.y > 0)
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y/2);
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
         }
         
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         CoyoteTimeCheck();
-        jumpBufferTimeCounter -= Time.deltaTime;
+        if (Input.GetButtonDown("Jump"))
+        {
+            jumpBufferTimeCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferTimeCounter -= Time.deltaTime;
+        }
     }
-    
+
     /// <summary>
     /// Coyote Time creates a bigger jump window for the player.
     /// </summary>
@@ -72,6 +79,13 @@ public class PlayerJump : MonoBehaviour
             coyoteTimeCounter -= Time.deltaTime; //Reduce the counter whenever player is not grounded. 
         }
     }
-    
-    
+
+
+    private void JumpBufferCheck()
+    {
+        if (collisionChecker.isGrounded)
+        {
+            jumpBufferTimeCounter -= Time.deltaTime;
+        }
+    }
 }
