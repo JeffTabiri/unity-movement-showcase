@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,7 +12,11 @@ public class PlayerRun : MonoBehaviour
     //Necessary Components
     private Rigidbody2D rb;
     private Vector2 moveInput;
+
+    private CameraFollow cameraFollower;
     
+    [SerializeField]
+    private GameObject cameraFollow;
     
     //Player Data
     private float runMaxSpeed = 7f;
@@ -42,6 +47,7 @@ public class PlayerRun : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        cameraFollower = cameraFollow.GetComponent<CameraFollow>();
     }
 
     // Update is called once per frame
@@ -64,10 +70,13 @@ public class PlayerRun : MonoBehaviour
         if (moveInput.x > 0 && !isFacingRight)
         {
             IsFacingRight = true;
+            cameraFollower.CallTurn();
         }
         else if (moveInput.x < 0 && isFacingRight)
         {
             IsFacingRight = false;
+            cameraFollower.CallTurn();
         }
     }
 }
+    
