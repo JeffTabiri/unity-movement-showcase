@@ -39,6 +39,7 @@ public class Camera : MonoBehaviour
 
     private void CheckDirection()
     {
+        /*
         if (playerRunObject.IsFacingRight)
         {
             cameraBox.transform.position = Vector3.Lerp(cameraBox.transform.position, positiveOffset, 0.1f);
@@ -47,6 +48,7 @@ public class Camera : MonoBehaviour
         {
             cameraBox.transform.position = Vector3.Lerp(cameraBox.transform.position, negativeOffset, 0.1f);
         }
+        */
     }
 
     public void PositiveOffsetLerp()
