@@ -82,24 +82,27 @@ public class PlayerJump : MonoBehaviour
         CheckIfPlayerFalls();
         CheckIfPlayerGoingUp();
         
+        /*
         if (collisionChecker.isGrounded)
         {
             hasPlayerReachedPeak = false;
         }
 
-        if (hasPlayerReachedPeak)
+        if (hasPlayerReachedPeak && !collisionChecker.isWalled)
         {
             rb.gravityScale = fallGravityMultiply;
         }
-        else
-        {
-            rb.gravityScale = 1;
-        }
-
-        if (isPlayerFalling)
+        
+        if (isPlayerFalling && !collisionChecker.isWalled)
         {
             rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -maxFallSpeed));
         }
+
+        if (collisionChecker.isGrounded)
+        {
+            rb.gravityScale = 1;
+        }
+        */
     }
 
     /// <summary>
