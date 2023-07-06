@@ -5,16 +5,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// Class responsible for the managaging the player run.
+/// Class responsible for the managing the player run.
 /// </summary>
 public class PlayerRun : MonoBehaviour
 {
     //Necessary Components
     private Rigidbody2D rb;
     
-    [SerializeField]
-    private Camera camera;
-
     public Rigidbody2D Rb
     {
         get
@@ -25,12 +22,14 @@ public class PlayerRun : MonoBehaviour
         {
             rb = value;
         }
-        
     }
-    private Vector2 moveInput;
-
+    
     //Player Data
     private float runMaxSpeed = 7f;
+    
+    //Player Move Input
+    private Vector2 moveInput;
+    
     
     [SerializeField]
     private bool isFacingRight = true;
@@ -67,14 +66,20 @@ public class PlayerRun : MonoBehaviour
         SetFaceDirection();
     }
 
-    //Responsible for reading input from player.
+    /// <summary>
+    /// Registers analog input from the user and assigns it to variable.
+    /// Ranges from -1 to 1, and represents the direction from left to right. 
+    /// </summary>
+    /// <param name="context"></param>
     public void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
-
     }
 
-    //Responsible for adjusting the the facing direction to the character.
+   
+    /// <summary>
+    /// Sets player face direction to the boolean value.
+    /// </summary>
     private void SetFaceDirection()
     {
         if (moveInput.x > 0 && !isFacingRight)
@@ -86,5 +91,6 @@ public class PlayerRun : MonoBehaviour
             IsFacingRight = false;
         }
     }
+    
 }
     
