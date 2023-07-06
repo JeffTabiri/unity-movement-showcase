@@ -8,10 +8,31 @@ public class PlayerJump : MonoBehaviour
     //Necessary Components
     private Rigidbody2D rb;
     private CollisionChecker collisionChecker;
-
-    //Player Data
-    private float jumpMaxHeight = 6f;
-
+    
+    /*
+     * Player Jump State
+    */
+    [SerializeField]
+    private bool hasPlayerReachedPeak = false;
+    
+    [SerializeField]
+    private bool isPlayerFalling = false;
+    
+    [SerializeField]
+    private bool isPlayerGoingUp = false;
+    
+    /*
+     * Player Jump Data
+     */
+    [SerializeField]
+    private float jumpPower = 6f;
+    
+    [SerializeField]
+    private float maxFallSpeed = 10f;
+    
+    [SerializeField]
+    private float fallGravityMultiply = 4;
+    
     //Coyote Timer
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
@@ -19,7 +40,8 @@ public class PlayerJump : MonoBehaviour
     //Jump Buffer Timer
     private float jumpBufferTime = 0.2f;
     private float jumpBufferTimeCounter;
-
+    
+    
     //Find necessary components
     void Awake()
     {
@@ -35,18 +57,19 @@ public class PlayerJump : MonoBehaviour
     /// </param>
     public void OnJump(InputAction.CallbackContext context)
     {
+       
         jumpBufferTimeCounter = jumpBufferTime;
         
         if (jumpBufferTimeCounter > 0 && coyoteTimeCounter > 0)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpMaxHeight);
+            rb.velocity = new Vector2(rb.velocity.x, jumpPower);
             coyoteTimeCounter = 0f;
             jumpBufferTimeCounter = 0f;
         }
 
-        if (context.canceled && rb.velocity.y > 0)
+        if (context.canceled)
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y*0.5f); 
         }
         
     }
@@ -55,13 +78,27 @@ public class PlayerJump : MonoBehaviour
     void FixedUpdate()
     {
         CoyoteTimeCheck();
-        if (Input.GetButtonDown("Jump"))
+        CheckJumpApex();
+        CheckIfPlayerFalls();
+        CheckIfPlayerGoingUp();
+        
+        if (collisionChecker.isGrounded)
         {
-            jumpBufferTimeCounter = jumpBufferTime;
+            hasPlayerReachedPeak = false;
+        }
+
+        if (hasPlayerReachedPeak)
+        {
+            rb.gravityScale = fallGravityMultiply;
         }
         else
         {
-            jumpBufferTimeCounter -= Time.deltaTime;
+            rb.gravityScale = 1;
+        }
+
+        if (isPlayerFalling)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -maxFallSpeed));
         }
     }
 
@@ -79,13 +116,52 @@ public class PlayerJump : MonoBehaviour
             coyoteTimeCounter -= Time.deltaTime; //Reduce the counter whenever player is not grounded. 
         }
     }
-
-
-    private void JumpBufferCheck()
+    
+    
+    
+    /**
+     * Checks when the player reaches its highest velocity.
+     */
+    private void CheckJumpApex()
     {
-        if (collisionChecker.isGrounded)
+        if (rb.velocity.y < 0 && !hasPlayerReachedPeak)
         {
-            jumpBufferTimeCounter -= Time.deltaTime;
+            hasPlayerReachedPeak = true;
         }
     }
+    
+    
+
+    /**
+     * Checks if player is falling.
+     * Returns a boolean value of its state. 
+     */
+    private void CheckIfPlayerFalls()
+    {
+        if (rb.velocity.y < 0)
+        {
+            isPlayerFalling = true;
+        }
+        else
+        {
+            isPlayerFalling = false;
+        }
+    }
+
+    /**
+     * Checks if player character is going upwards.
+     * Returns a boolean value of its state. 
+     */
+    private void CheckIfPlayerGoingUp()
+    {
+        if (rb.velocity.y > 0)
+        {
+            isPlayerGoingUp = true;
+        }
+        else
+        {
+            isPlayerGoingUp = false;
+        }
+    }
+    
 }
